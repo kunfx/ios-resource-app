@@ -1,0 +1,48 @@
+name: AppKu
+options:
+  bundleIdPrefix: top.appku
+  deploymentTarget:
+    iOS: "16.0"
+  createIntermediateGroups: true
+  groupSortPosition: top
+  generateEmptyDirectories: false
+
+settings:
+  base:
+    MARKETING_VERSION: "1.0.0"
+    CURRENT_PROJECT_VERSION: "1"
+    SWIFT_VERSION: "5.0"
+    IPHONEOS_DEPLOYMENT_TARGET: "16.0"
+    ENABLE_BITCODE: NO
+    SWIFT_OPTIMIZATION_LEVEL: "-O"
+    ALWAYS_SEARCH_USER_PATHS: NO
+    CLANG_ENABLE_MODULES: YES
+    GCC_C_LANGUAGE_STANDARD: gnu11
+
+targets:
+  AppKu:
+    type: application
+    platform: iOS
+    sources:
+      - path: Sources
+    scheme:
+      testTargets: []
+      gatherCoverageData: false
+    settings:
+      base:
+        PRODUCT_NAME: AppKu
+        PRODUCT_BUNDLE_IDENTIFIER: top.appku.app
+        INFOPLIST_FILE: Support/Info.plist
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
+        TARGETED_DEVICE_FAMILY: "1"
+        SUPPORTS_MACCATALYST: NO
+        SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD: NO
+        # 无签名构建：交给 GitHub Actions 产出未签名 ipa，本地用签名工具重签
+        CODE_SIGN_STYLE: Manual
+        CODE_SIGN_IDENTITY: ""
+        CODE_SIGNING_REQUIRED: NO
+        CODE_SIGNING_ALLOWED: NO
+        DEVELOPMENT_TEAM: ""
+        PROVISIONING_PROFILE_SPECIFIER: ""
+        ENABLE_USER_SCRIPT_SANDBOXING: NO
