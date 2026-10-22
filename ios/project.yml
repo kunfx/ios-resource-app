@@ -1,6 +1,6 @@
 name: AppKu
 options:
-  bundleIdPrefix: top.appku
+  bundleIdPrefix: top.appku.com
   deploymentTarget:
     iOS: "16.0"
   createIntermediateGroups: true
