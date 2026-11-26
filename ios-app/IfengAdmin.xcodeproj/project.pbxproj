@@ -1,0 +1,492 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		A10000000000000000000001 /* AppConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000001 /* AppConfig.swift */; };
+		A10000000000000000000002 /* ServerAddress.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000002 /* ServerAddress.swift */; };
+		A10000000000000000000003 /* KeychainStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000003 /* KeychainStore.swift */; };
+		A10000000000000000000004 /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000004 /* AppState.swift */; };
+		A10000000000000000000005 /* IfengAdminApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000005 /* IfengAdminApp.swift */; };
+		A10000000000000000000006 /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000006 /* Models.swift */; };
+		A10000000000000000000007 /* APIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000007 /* APIClient.swift */; };
+		A10000000000000000000008 /* RealtimeClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000008 /* RealtimeClient.swift */; };
+		A10000000000000000000009 /* ConversationListModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000009 /* ConversationListModel.swift */; };
+		A1000000000000000000000A /* ChatModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000000000000000000000A /* ChatModel.swift */; };
+		A1000000000000000000000B /* ImagePreparer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000000000000000000000B /* ImagePreparer.swift */; };
+		A1000000000000000000000C /* LucideIcon.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000000000000000000000C /* LucideIcon.swift */; };
+		A1000000000000000000000D /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000000000000000000000D /* Theme.swift */; };
+		A1000000000000000000000E /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000000000000000000000E /* RootView.swift */; };
+		A1000000000000000000000F /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000000000000000000000F /* LoginView.swift */; };
+		A10000000000000000000010 /* ConversationListScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000010 /* ConversationListScreen.swift */; };
+		A10000000000000000000011 /* ChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000011 /* ChatView.swift */; };
+		A10000000000000000000012 /* ChatMessageRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000012 /* ChatMessageRow.swift */; };
+		A10000000000000000000013 /* VisitorInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000013 /* VisitorInfoView.swift */; };
+		A10000000000000000000014 /* InboxScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000014 /* InboxScreen.swift */; };
+		A10000000000000000000015 /* SettingsScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000015 /* SettingsScreen.swift */; };
+		A50000000000000000000001 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000016 /* Assets.xcassets */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		A20000000000000000000001 /* AppConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppConfig.swift; sourceTree = "<group>"; };
+		A20000000000000000000002 /* ServerAddress.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerAddress.swift; sourceTree = "<group>"; };
+		A20000000000000000000003 /* KeychainStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainStore.swift; sourceTree = "<group>"; };
+		A20000000000000000000004 /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
+		A20000000000000000000005 /* IfengAdminApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IfengAdminApp.swift; sourceTree = "<group>"; };
+		A20000000000000000000006 /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
+		A20000000000000000000007 /* APIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIClient.swift; sourceTree = "<group>"; };
+		A20000000000000000000008 /* RealtimeClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealtimeClient.swift; sourceTree = "<group>"; };
+		A20000000000000000000009 /* ConversationListModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationListModel.swift; sourceTree = "<group>"; };
+		A2000000000000000000000A /* ChatModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatModel.swift; sourceTree = "<group>"; };
+		A2000000000000000000000B /* ImagePreparer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePreparer.swift; sourceTree = "<group>"; };
+		A2000000000000000000000C /* LucideIcon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LucideIcon.swift; sourceTree = "<group>"; };
+		A2000000000000000000000D /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
+		A2000000000000000000000E /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
+		A2000000000000000000000F /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
+		A20000000000000000000010 /* ConversationListScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationListScreen.swift; sourceTree = "<group>"; };
+		A20000000000000000000011 /* ChatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatView.swift; sourceTree = "<group>"; };
+		A20000000000000000000012 /* ChatMessageRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatMessageRow.swift; sourceTree = "<group>"; };
+		A20000000000000000000013 /* VisitorInfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VisitorInfoView.swift; sourceTree = "<group>"; };
+		A20000000000000000000014 /* InboxScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InboxScreen.swift; sourceTree = "<group>"; };
+		A20000000000000000000015 /* SettingsScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsScreen.swift; sourceTree = "<group>"; };
+		A20000000000000000000016 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		A20000000000000000000017 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		A20000000000000000000018 /* IfengAdmin.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = IfengAdmin.app; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		A40000000000000000000004 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		A30000000000000000000001 = {
+			isa = PBXGroup;
+			children = (
+				A30000000000000000000002 /* IfengAdmin */,
+				A30000000000000000000003 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		A30000000000000000000003 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A20000000000000000000018 /* IfengAdmin.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		A30000000000000000000002 /* IfengAdmin */ = {
+			isa = PBXGroup;
+			children = (
+				A30000000000000000000004 /* App */,
+				A30000000000000000000005 /* Core */,
+				A30000000000000000000006 /* Design */,
+				A30000000000000000000007 /* Features */,
+				A20000000000000000000016 /* Assets.xcassets */,
+				A20000000000000000000017 /* Info.plist */,
+			);
+			path = IfengAdmin;
+			sourceTree = "<group>";
+		};
+		A30000000000000000000004 /* App */ = {
+			isa = PBXGroup;
+			children = (
+				A20000000000000000000001 /* AppConfig.swift */,
+				A20000000000000000000002 /* ServerAddress.swift */,
+				A20000000000000000000003 /* KeychainStore.swift */,
+				A20000000000000000000004 /* AppState.swift */,
+				A20000000000000000000005 /* IfengAdminApp.swift */,
+			);
+			path = "App";
+			sourceTree = "<group>";
+		};
+		A30000000000000000000005 /* Core */ = {
+			isa = PBXGroup;
+			children = (
+				A20000000000000000000006 /* Models.swift */,
+				A20000000000000000000007 /* APIClient.swift */,
+				A20000000000000000000008 /* RealtimeClient.swift */,
+				A20000000000000000000009 /* ConversationListModel.swift */,
+				A2000000000000000000000A /* ChatModel.swift */,
+				A2000000000000000000000B /* ImagePreparer.swift */,
+			);
+			path = "Core";
+			sourceTree = "<group>";
+		};
+		A30000000000000000000006 /* Design */ = {
+			isa = PBXGroup;
+			children = (
+				A2000000000000000000000C /* LucideIcon.swift */,
+				A2000000000000000000000D /* Theme.swift */,
+			);
+			path = "Design";
+			sourceTree = "<group>";
+		};
+		A30000000000000000000007 /* Features */ = {
+			isa = PBXGroup;
+			children = (
+				A3000000000000000000000B /* Chat */,
+				A3000000000000000000000A /* Conversations */,
+				A3000000000000000000000C /* Inbox */,
+				A30000000000000000000009 /* Login */,
+				A30000000000000000000008 /* Root */,
+				A3000000000000000000000D /* Settings */,
+			);
+			path = "Features";
+			sourceTree = "<group>";
+		};
+		A3000000000000000000000B /* Features/Chat */ = {
+			isa = PBXGroup;
+			children = (
+				A20000000000000000000011 /* ChatView.swift */,
+				A20000000000000000000012 /* ChatMessageRow.swift */,
+				A20000000000000000000013 /* VisitorInfoView.swift */,
+			);
+			name = "Chat";
+			path = "Chat";
+			sourceTree = "<group>";
+		};
+		A3000000000000000000000A /* Features/Conversations */ = {
+			isa = PBXGroup;
+			children = (
+				A20000000000000000000010 /* ConversationListScreen.swift */,
+			);
+			name = "Conversations";
+			path = "Conversations";
+			sourceTree = "<group>";
+		};
+		A3000000000000000000000C /* Features/Inbox */ = {
+			isa = PBXGroup;
+			children = (
+				A20000000000000000000014 /* InboxScreen.swift */,
+			);
+			name = "Inbox";
+			path = "Inbox";
+			sourceTree = "<group>";
+		};
+		A30000000000000000000009 /* Features/Login */ = {
+			isa = PBXGroup;
+			children = (
+				A2000000000000000000000F /* LoginView.swift */,
+			);
+			name = "Login";
+			path = "Login";
+			sourceTree = "<group>";
+		};
+		A30000000000000000000008 /* Features/Root */ = {
+			isa = PBXGroup;
+			children = (
+				A2000000000000000000000E /* RootView.swift */,
+			);
+			name = "Root";
+			path = "Root";
+			sourceTree = "<group>";
+		};
+		A3000000000000000000000D /* Features/Settings */ = {
+			isa = PBXGroup;
+			children = (
+				A20000000000000000000015 /* SettingsScreen.swift */,
+			);
+			name = "Settings";
+			path = "Settings";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		A40000000000000000000001 /* IfengAdmin */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A40000000000000000000007 /* Build configuration list for PBXNativeTarget "IfengAdmin" */;
+			buildPhases = (
+				A40000000000000000000003 /* Sources */,
+				A40000000000000000000004 /* Frameworks */,
+				A40000000000000000000005 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = IfengAdmin;
+			productName = IfengAdmin;
+			productReference = A20000000000000000000018 /* IfengAdmin.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		A40000000000000000000002 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1500;
+				LastUpgradeCheck = 1500;
+				TargetAttributes = {
+					A40000000000000000000001 = {
+						CreatedOnToolsVersion = 15.0;
+					};
+				};
+			};
+			buildConfigurationList = A40000000000000000000006 /* Build configuration list for PBXProject "IfengAdmin" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+				"zh-Hans",
+			);
+			mainGroup = A30000000000000000000001;
+			productRefGroup = A30000000000000000000003 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				A40000000000000000000001 /* IfengAdmin */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		A40000000000000000000005 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A50000000000000000000001 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		A40000000000000000000003 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A10000000000000000000001 /* AppConfig.swift in Sources */,
+				A10000000000000000000002 /* ServerAddress.swift in Sources */,
+				A10000000000000000000003 /* KeychainStore.swift in Sources */,
+				A10000000000000000000004 /* AppState.swift in Sources */,
+				A10000000000000000000005 /* IfengAdminApp.swift in Sources */,
+				A10000000000000000000006 /* Models.swift in Sources */,
+				A10000000000000000000007 /* APIClient.swift in Sources */,
+				A10000000000000000000008 /* RealtimeClient.swift in Sources */,
+				A10000000000000000000009 /* ConversationListModel.swift in Sources */,
+				A1000000000000000000000A /* ChatModel.swift in Sources */,
+				A1000000000000000000000B /* ImagePreparer.swift in Sources */,
+				A1000000000000000000000C /* LucideIcon.swift in Sources */,
+				A1000000000000000000000D /* Theme.swift in Sources */,
+				A1000000000000000000000E /* RootView.swift in Sources */,
+				A1000000000000000000000F /* LoginView.swift in Sources */,
+				A10000000000000000000010 /* ConversationListScreen.swift in Sources */,
+				A10000000000000000000011 /* ChatView.swift in Sources */,
+				A10000000000000000000012 /* ChatMessageRow.swift in Sources */,
+				A10000000000000000000013 /* VisitorInfoView.swift in Sources */,
+				A10000000000000000000014 /* InboxScreen.swift in Sources */,
+				A10000000000000000000015 /* SettingsScreen.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		A40000000000000000000008 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_TESTABILITY = YES;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				ONLY_ACTIVE_ARCH = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		A40000000000000000000009 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		A4000000000000000000000A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = IfengAdmin/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ifeng.admin;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		A4000000000000000000000B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = IfengAdmin/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ifeng.admin;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		A40000000000000000000006 /* Build configuration list for PBXProject "IfengAdmin" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A40000000000000000000008 /* Debug */,
+				A40000000000000000000009 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A40000000000000000000007 /* Build configuration list for PBXNativeTarget "IfengAdmin" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A4000000000000000000000A /* Debug */,
+				A4000000000000000000000B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = A40000000000000000000002 /* Project object */;
+}
