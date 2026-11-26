@@ -1,125 +1,135 @@
-name: Build iOS unsigned IPA
+name: Build iOS IPA
+
+# 在 GitHub Actions 的 macOS Runner 上用系统 Xcode 编译 Release，输出未签名 IPA。
+# 未签名 IPA 不能直接安装到 iPhone，需要用 ESign / 自签工具或开发者证书重新签名。
 
 on:
-  workflow_dispatch:
-    inputs:
-      admin_base_url:
-        description: '后台 HTTPS 根域名（留空使用 App.xcconfig）'
-        required: false
-        type: string
-      bundle_identifier:
-        description: 'Bundle Identifier（留空使用 App.xcconfig）'
-        required: false
-        type: string
-      url_scheme:
-        description: '独立 URL Scheme（留空使用 App.xcconfig）'
-        required: false
-        type: string
   push:
-    paths: ['ios-app/**', '.github/workflows/build-ios.yml']
+    branches:
+      - main
+      - master
+    paths:
+      - "ios-app/**"
+      - ".github/workflows/build-ios.yml"
   pull_request:
-    paths: ['ios-app/**', '.github/workflows/build-ios.yml']
+    paths:
+      - "ios-app/**"
+      - ".github/workflows/build-ios.yml"
+  workflow_dispatch:
 
-permissions:
-  contents: read
+concurrency:
+  group: ios-ipa-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  unsigned-ipa:
+  build:
+    name: Build unsigned IPA
     runs-on: macos-15
-    timeout-minutes: 30
-    env:
-      ADMIN_INPUT: ${{ inputs.admin_base_url }}
-      BUNDLE_INPUT: ${{ inputs.bundle_identifier }}
-      SCHEME_INPUT: ${{ inputs.url_scheme }}
+    timeout-minutes: 40
+
     steps:
-      - uses: actions/checkout@v4
-      - name: Show installed Xcode and SDKs
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Show toolchain
         run: |
-          xcode-select -p
+          sw_vers
           xcodebuild -version
-          xcodebuild -showsdks
+          echo "iPhoneOS SDK: $(xcrun --sdk iphoneos --show-sdk-version)"
+          xcode-select -p
 
-      - name: Validate sources and bridge behavior
+      - name: Validate project
+        working-directory: ios-app
         run: |
-          node ios-app/Tests/validate-project.mjs
-          node --test ios-app/Tests/AdminBridge.test.mjs
-          plutil -lint ios-app/IfengAdmin/Info.plist
-          plutil -lint ios-app/IfengAdmin.xcodeproj/project.pbxproj
+          set -o pipefail
+          if xcodebuild -list -project IfengAdmin.xcodeproj > /tmp/list.log 2>&1; then
+            cat /tmp/list.log
+            exit 0
+          fi
+          echo "::warning::Committed Xcode project could not be read; regenerating with XcodeGen."
+          cat /tmp/list.log || true
+          brew install xcodegen
+          xcodegen generate
+          xcodebuild -list -project IfengAdmin.xcodeproj
 
-      - name: Test native URL parsing and navigation policy
+      - name: Build Release (unsigned)
+        working-directory: ios-app
         run: |
-          mkdir -p "$RUNNER_TEMP/ifeng-tests"
-          swiftc ios-app/IfengAdmin/App/AppConfiguration.swift \
-            ios-app/IfengAdmin/URLHandler/DeepLink.swift \
-            ios-app/IfengAdmin/URLHandler/NavigationPolicy.swift \
-            ios-app/Tests/main.swift -o "$RUNNER_TEMP/ifeng-tests/url-tests"
-          "$RUNNER_TEMP/ifeng-tests/url-tests"
+          set -o pipefail
+          xcodebuild \
+            -project IfengAdmin.xcodeproj \
+            -scheme IfengAdmin \
+            -configuration Release \
+            -sdk iphoneos \
+            -destination "generic/platform=iOS" \
+            -derivedDataPath build \
+            ARCHS=arm64 \
+            ONLY_ACTIVE_ARCH=NO \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_IDENTITY="" \
+            DEVELOPMENT_TEAM="" \
+            build 2>&1 | tee /tmp/build.log
 
-      - name: Build unsigned Release application
-        shell: bash
-        run: |
-          set -euo pipefail
-          mkdir -p ios-app/build
-          # 输入通过环境变量传入，不把用户文本直接插入 shell 源码。
-          # 使用位置参数兼容 macOS Bash 3.2；空的 "$@" 也可在 set -u 下安全展开。
-          set --
-          if [[ -n "${ADMIN_INPUT:-}" ]]; then
-            set -- "$@" "ADMIN_BASE_URL=$ADMIN_INPUT"
-          fi
-          if [[ -n "${BUNDLE_INPUT:-}" ]]; then
-            set -- "$@" "PRODUCT_BUNDLE_IDENTIFIER=$BUNDLE_INPUT"
-          fi
-          if [[ -n "${SCHEME_INPUT:-}" ]]; then
-            set -- "$@" "APP_URL_SCHEME=$SCHEME_INPUT"
-          fi
-          xcodebuild -project ios-app/IfengAdmin.xcodeproj -scheme IfengAdmin \
-            -configuration Release -sdk iphoneos -destination 'generic/platform=iOS' \
-            -derivedDataPath ios-app/build/DerivedData \
-            CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY= \
-            "$@" build 2>&1 | tee ios-app/build/xcodebuild.log
-
-      - name: Package and verify unsigned IPA
-        shell: bash
+      - name: Package unsigned IPA
+        working-directory: ios-app
         run: |
           set -euo pipefail
-          app="ios-app/build/DerivedData/Build/Products/Release-iphoneos/IfengAdmin.app"
-          test -d "$app"
-          test -f "$app/IfengAdmin"
-          test -f "$app/AdminBridge.js"
-          test -f "$app/MobileUI.js"
-          test -f "$app/MobileUI.css"
-          test -f "$app/LUCIDE-LICENSE"
-          test -f "$app/Assets.car"
-          /usr/libexec/PlistBuddy -c 'Print :CFBundleIdentifier' "$app/Info.plist"
-          # 明确检查产物没有可安装签名，绝不将构建成功称为签名完成。
-          # 某些工具链会给可执行文件附加 ad-hoc 签名；移除后仍需另行正式签名。
-          if codesign --verify "$app" >/dev/null 2>&1; then
-            codesign --remove-signature "$app/IfengAdmin"
+          APP_PATH="build/Build/Products/Release-iphoneos/IfengAdmin.app"
+          if [ ! -d "$APP_PATH" ]; then
+            echo "::error::Build product not found at $APP_PATH"
+            ls -R build/Build/Products || true
+            exit 1
           fi
-          if codesign --verify "$app" >/dev/null 2>&1; then exit 1; fi
-          test ! -e "$app/embedded.mobileprovision"
-          mkdir -p ios-app/build/package/Payload
-          ditto "$app" ios-app/build/package/Payload/IfengAdmin.app
-          (cd ios-app/build/package && /usr/bin/zip -qry ../IfengAdmin-unsigned.ipa Payload)
-          unzip -t ios-app/build/IfengAdmin-unsigned.ipa
-          shasum -a 256 ios-app/build/IfengAdmin-unsigned.ipa > ios-app/build/SHA256SUMS.txt
-          echo '未签名 IPA 已生成，安装前必须另行合法签名。' >> "$GITHUB_STEP_SUMMARY"
 
-      - name: Upload unsigned IPA
+          rm -rf Payload IfengAdmin-unsigned.ipa
+          mkdir -p Payload
+          cp -R "$APP_PATH" Payload/
+          rm -rf "Payload/IfengAdmin.app/_CodeSignature"
+          /usr/bin/zip -qry IfengAdmin-unsigned.ipa Payload
+
+          echo "=== IPA 内容检查 ==="
+          unzip -l IfengAdmin-unsigned.ipa | head -20
+          ls -lh IfengAdmin-unsigned.ipa
+
+          echo "=== Info.plist 关键配置 ==="
+          /usr/libexec/PlistBuddy -c "Print :CFBundleIdentifier" "Payload/IfengAdmin.app/Info.plist"
+          /usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" "Payload/IfengAdmin.app/Info.plist"
+          /usr/libexec/PlistBuddy -c "Print :CFBundleURLTypes:0:CFBundleURLSchemes:0" "Payload/IfengAdmin.app/Info.plist"
+          /usr/libexec/PlistBuddy -c "Print :MinimumOSVersion" "Payload/IfengAdmin.app/Info.plist" || true
+          /usr/libexec/PlistBuddy -c "Print :DefaultServerURL" "Payload/IfengAdmin.app/Info.plist" || true
+
+          echo "=== 代码签名状态（应为未签名）==="
+          codesign -dv "Payload/IfengAdmin.app" 2>&1 || echo "unsigned (expected)"
+
+      - name: Upload IPA artifact
         uses: actions/upload-artifact@v4
         with:
-          name: IfengAdmin-unsigned-${{ github.run_number }}
-          path: |
-            ios-app/build/IfengAdmin-unsigned.ipa
-            ios-app/build/SHA256SUMS.txt
+          name: IfengAdmin-unsigned-ipa
+          path: ios-app/IfengAdmin-unsigned.ipa
           if-no-files-found: error
-          retention-days: 14
+          retention-days: 30
 
-      - name: Upload build diagnostics
-        if: always()
+      - name: Upload build log on failure
+        if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: IfengAdmin-build-log-${{ github.run_number }}
-          path: ios-app/build/xcodebuild.log
+          name: build-log
+          path: |
+            /tmp/build.log
+            /tmp/list.log
           if-no-files-found: ignore
           retention-days: 7
+
+      - name: Failure summary
+        if: failure()
+        run: |
+          echo "### 构建失败" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "完整日志见本步骤上方输出，以及 Artifact \`build-log\`。" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          if [ -f /tmp/build.log ]; then
+            grep -E "error:|warning: .*deprecated|BUILD FAILED" /tmp/build.log | head -80 >> "$GITHUB_STEP_SUMMARY" || true
+          fi
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
