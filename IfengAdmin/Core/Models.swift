@@ -1,0 +1,339 @@
+import Foundation
+
+// MARK: - 宽松 JSON 值
+
+/// 用于承载不参与业务逻辑、但可能出现在响应里的字段，避免未知结构导致整体解码失败。
+enum JSONValue: Codable, Hashable {
+    case string(String)
+    case number(Double)
+    case bool(Bool)
+    case object([String: JSONValue])
+    case array([JSONValue])
+    case null
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        if container.decodeNil() {
+            self = .null
+        } else if let value = try? container.decode(Bool.self) {
+            self = .bool(value)
+        } else if let value = try? container.decode(Double.self) {
+            self = .number(value)
+        } else if let value = try? container.decode(String.self) {
+            self = .string(value)
+        } else if let value = try? container.decode([String: JSONValue].self) {
+            self = .object(value)
+        } else if let value = try? container.decode([JSONValue].self) {
+            self = .array(value)
+        } else {
+            throw DecodingError.dataCorruptedError(in: container, debugDescription: "unsupported JSON value")
+        }
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.singleValueContainer()
+        switch self {
+        case .string(let value): try container.encode(value)
+        case .number(let value): try container.encode(value)
+        case .bool(let value): try container.encode(value)
+        case .object(let value): try container.encode(value)
+        case .array(let value): try container.encode(value)
+        case .null: try container.encodeNil()
+        }
+    }
+}
+
+// MARK: - 账户与个人资料
+
+struct Account: Codable, Hashable, Identifiable {
+    var id: Int
+    var name: String?
+    var role: String?
+}
+
+/// GET /api/v1/profile 直接返回该对象；登录接口包在 data 里。
+struct Profile: Codable, Hashable {
+    var id: Int
+    var name: String?
+    var displayName: String?
+    var email: String?
+    var accountId: Int
+    var role: String?
+    var avatarUrl: String?
+    var accounts: [Account]?
+
+    var bestName: String {
+        let candidates = [displayName, name, email]
+        for candidate in candidates {
+            if let text = candidate?.trimmingCharacters(in: .whitespacesAndNewlines), !text.isEmpty {
+                return text
+            }
+        }
+        return "管理员"
+    }
+}
+
+// MARK: - 访客
+
+struct Contact: Codable, Hashable {
+    var id: Int
+    var name: String?
+    var identifier: String?
+    var email: String?
+    var phoneNumber: String?
+    var thumbnail: String?
+}
+
+struct Sender: Codable, Hashable {
+    var id: Int?
+    var name: String?
+    var email: String?
+    var avatarUrl: String?
+    var type: String?
+    var availabilityStatus: String?
+}
+
+/// 会话级访客采集快照（不是实时 GPS，也不是身份凭据）。
+struct VisitorDetails: Codable, Hashable {
+    var ipAddress: String?
+    var city: String?
+    var region: String?
+    var country: String?
+    var countryCode: String?
+    var sourceUrl: String?
+    var operatingSystem: String?
+    var browser: String?
+    var language: String?
+    var recordedAt: Int?
+
+    var locationText: String {
+        let parts = [city, region, country]
+            .compactMap { $0?.trimmingCharacters(in: .whitespacesAndNewlines) }
+            .filter { !$0.isEmpty }
+        var seen = Set<String>()
+        let unique = parts.filter { seen.insert($0).inserted }
+        return unique.isEmpty ? "位置未知" : unique.joined(separator: " · ")
+    }
+
+    /// 由 ISO 国家码生成旗帜 emoji，缺失时返回 nil。
+    var flagEmoji: String? {
+        guard let code = countryCode?.uppercased(), code.count == 2 else { return nil }
+        var scalars = String.UnicodeScalarView()
+        for character in code.unicodeScalars {
+            guard let scalar = UnicodeScalar(127397 + character.value) else { return nil }
+            scalars.append(scalar)
+        }
+        return String(scalars)
+    }
+}
+
+// MARK: - 会话
+
+struct ConversationMeta: Codable, Hashable {
+    var sender: Contact?
+    var assignee: Sender?
+    var assigneeType: String?
+    var channel: String?
+}
+
+struct Conversation: Codable, Hashable, Identifiable {
+    var id: Int
+    var accountId: Int?
+    var inboxId: Int?
+    var status: String?
+    var unreadCount: Int?
+    var createdAt: Int?
+    var updatedAt: Int?
+    var lastActivityAt: Int?
+    var visitorMessagesBlocked: Bool?
+    var canReply: Bool?
+    var inboxAvatarUrl: String?
+    var inboxGreetingAvatarUrl: String?
+    var meta: ConversationMeta?
+    var visitorDetails: VisitorDetails?
+    var lastNonActivityMessage: Message?
+    var messages: [Message]?
+    var additionalAttributes: JSONValue?
+
+    /// 深链或列表跳转时先构造一个只有 ID 的占位对象，随后由详情接口覆盖。
+    init(id: Int) {
+        self.id = id
+    }
+
+    var visitorName: String {
+        let raw = meta?.sender?.name?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+        return raw.isEmpty ? "访客 #\(id)" : raw
+    }
+
+    var isResolved: Bool { status == "resolved" }
+    var isBlocked: Bool { visitorMessagesBlocked ?? false }
+
+    /// 列表里展示的最后一条消息：优先 last_non_activity_message，回退到 messages 的最后一条。
+    var previewMessage: Message? {
+        if let message = lastNonActivityMessage { return message }
+        return messages?.last
+    }
+
+    var activityTimestamp: Int {
+        lastActivityAt ?? updatedAt ?? createdAt ?? 0
+    }
+}
+
+struct ConversationPage: Codable {
+    struct Meta: Codable, Hashable {
+        var mineCount: Int?
+        var unassignedCount: Int?
+        var allCount: Int?
+    }
+    struct Body: Codable {
+        var meta: Meta?
+        var payload: [Conversation]
+    }
+    var data: Body
+}
+
+// MARK: - 消息
+
+struct Attachment: Codable, Hashable, Identifiable {
+    var id: Int
+    var messageId: Int?
+    var fileType: String?
+    var contentType: String?
+    var fileSize: Int?
+    var width: Int?
+    var height: Int?
+    var name: String?
+    /// 服务端签名的完整 URL（含 cap），约 24 小时过期，失效需重新 GET 消息。
+    var dataUrl: String?
+    var thumbUrl: String?
+
+    var isImage: Bool { (fileType ?? "image") == "image" }
+}
+
+struct Message: Codable, Hashable, Identifiable {
+    var id: Int
+    var accountId: Int?
+    var inboxId: Int?
+    var conversationId: Int?
+    var content: String?
+    var contentType: String?
+    /// 0 访客、1 客服、2 系统活动、3 模板/自动消息。
+    var messageType: Int?
+    var isPrivate: Bool?
+    var status: String?
+    var readAt: Int?
+    var createdAt: Int?
+    var senderId: Int?
+    var senderType: String?
+    var sender: Sender?
+    var echoId: String?
+    var attachments: [Attachment]?
+    var contentAttributes: JSONValue?
+
+    var type: MessageType { MessageType(rawValue: messageType ?? 1) ?? .agent }
+    var isPrivateNote: Bool { isPrivate ?? false }
+    var images: [Attachment] { (attachments ?? []).filter { $0.isImage } }
+    var text: String { content ?? "" }
+}
+
+enum MessageType: Int {
+    case incoming = 0
+    case agent = 1
+    case activity = 2
+    case template = 3
+}
+
+struct MessagePage: Codable {
+    struct Meta: Codable {
+        var contact: Contact?
+        var assignee: Sender?
+        var agentLastSeenAt: Int?
+    }
+    var meta: Meta?
+    var payload: [Message]
+}
+
+// MARK: - 收件箱
+
+struct Inbox: Codable, Hashable, Identifiable {
+    var id: Int
+    var name: String?
+    var channelType: String?
+    var websiteUrl: String?
+    var avatarUrl: String?
+    var greetingAvatarUrl: String?
+    var businessName: String?
+
+    var displayName: String {
+        let raw = name?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+        return raw.isEmpty ? "收件箱 #\(id)" : raw
+    }
+
+    var websiteHost: String? {
+        guard let raw = websiteUrl, let url = URL(string: raw), let host = url.host else { return nil }
+        return host
+    }
+}
+
+struct InboxListEnvelope: Codable {
+    var payload: [Inbox]
+}
+
+// MARK: - Bark
+
+struct BarkSettings: Codable, Hashable {
+    var enabled: Bool
+    var hasKey: Bool
+}
+
+// MARK: - 实时
+
+struct RealtimeTicket: Codable {
+    var ticket: String
+    var expiresIn: Int?
+    var eventsUrl: String?
+}
+
+/// 从 SSE 摘要解析出的轻量事件。
+struct RealtimeEvent {
+    enum Kind: String {
+        case messageCreated = "message.created"
+        case messageUpdated = "message.updated"
+        case messageRead = "message.read"
+        case conversationStatusChanged = "conversation.status_changed"
+        case conversationUpdated = "conversation.updated"
+        case connected = "realtime.connected"
+        case resyncRequired = "realtime.resync_required"
+        case error = "realtime.error"
+        case unknown
+    }
+
+    let kind: Kind
+    let rawKind: String
+    let conversationId: Int?
+    let messageId: Int?
+    let messageType: Int?
+    let status: String?
+    let errorCode: String?
+
+    init(kind: String, payload: Data) {
+        self.rawKind = kind
+        self.kind = Kind(rawValue: kind) ?? .unknown
+        let object = (try? JSONSerialization.jsonObject(with: payload)) as? [String: Any]
+        self.conversationId = object?["conversation_id"] as? Int
+        self.messageId = object?["message_id"] as? Int
+        self.messageType = object?["message_type"] as? Int
+        self.status = object?["status"] as? String
+        self.errorCode = object?["code"] as? String
+    }
+
+    init(kind: Kind) {
+        self.kind = kind
+        self.rawKind = kind.rawValue
+        self.conversationId = nil
+        self.messageId = nil
+        self.messageType = nil
+        self.status = nil
+        self.errorCode = nil
+    }
+}
