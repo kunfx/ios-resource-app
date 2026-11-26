@@ -61,30 +61,22 @@ jobs:
           set -euo pipefail
           mkdir -p ios-app/build
           # 输入通过环境变量传入，不把用户文本直接插入 shell 源码。
-          overrides=()
-          if [[ -n "$ADMIN_INPUT" ]]; then overrides+=("ADMIN_BASE_URL=$ADMIN_INPUT"); fi
-          if [[ -n "$BUNDLE_INPUT" ]]; then overrides+=("PRODUCT_BUNDLE_IDENTIFIER=$BUNDLE_INPUT"); fi
-          if [[ -n "$SCHEME_INPUT" ]]; then overrides+=("APP_URL_SCHEME=$SCHEME_INPUT"); fi
-
-          # Bash 严格模式兼容：没有覆盖参数时不展开空数组
-          if (( ${#overrides[@]} > 0 )); then
-            xcodebuild -project ios-app/IfengAdmin.xcodeproj -scheme IfengAdmin \
-              -configuration Release -sdk iphoneos -destination 'generic/platform=iOS' \
-              -derivedDataPath ios-app/build/DerivedData \
-              CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY= \
-              "${overrides[@]}" build 2>&1 | tee ios-app/build/xcodebuild.log
-          else
-            xcodebuild -project ios-app/IfengAdmin.xcodeproj -scheme IfengAdmin \
-              -configuration Release -sdk iphoneos -destination 'generic/platform=iOS' \
-              -derivedDataPath ios-app/build/DerivedData \
-              CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY= \
-              build 2>&1 | tee ios-app/build/xcodebuild.log
+          # 使用位置参数兼容 macOS Bash 3.2；空的 "$@" 也可在 set -u 下安全展开。
+          set --
+          if [[ -n "${ADMIN_INPUT:-}" ]]; then
+            set -- "$@" "ADMIN_BASE_URL=$ADMIN_INPUT"
+          fi
+          if [[ -n "${BUNDLE_INPUT:-}" ]]; then
+            set -- "$@" "PRODUCT_BUNDLE_IDENTIFIER=$BUNDLE_INPUT"
+          fi
+          if [[ -n "${SCHEME_INPUT:-}" ]]; then
+            set -- "$@" "APP_URL_SCHEME=$SCHEME_INPUT"
           fi
           xcodebuild -project ios-app/IfengAdmin.xcodeproj -scheme IfengAdmin \
             -configuration Release -sdk iphoneos -destination 'generic/platform=iOS' \
             -derivedDataPath ios-app/build/DerivedData \
             CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY= \
-            "${overrides[@]}" build 2>&1 | tee ios-app/build/xcodebuild.log
+            "$@" build 2>&1 | tee ios-app/build/xcodebuild.log
 
       - name: Package and verify unsigned IPA
         shell: bash
