@@ -65,6 +65,21 @@ jobs:
           if [[ -n "$ADMIN_INPUT" ]]; then overrides+=("ADMIN_BASE_URL=$ADMIN_INPUT"); fi
           if [[ -n "$BUNDLE_INPUT" ]]; then overrides+=("PRODUCT_BUNDLE_IDENTIFIER=$BUNDLE_INPUT"); fi
           if [[ -n "$SCHEME_INPUT" ]]; then overrides+=("APP_URL_SCHEME=$SCHEME_INPUT"); fi
+
+          # Bash 严格模式兼容：没有覆盖参数时不展开空数组
+          if (( ${#overrides[@]} > 0 )); then
+            xcodebuild -project ios-app/IfengAdmin.xcodeproj -scheme IfengAdmin \
+              -configuration Release -sdk iphoneos -destination 'generic/platform=iOS' \
+              -derivedDataPath ios-app/build/DerivedData \
+              CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY= \
+              "${overrides[@]}" build 2>&1 | tee ios-app/build/xcodebuild.log
+          else
+            xcodebuild -project ios-app/IfengAdmin.xcodeproj -scheme IfengAdmin \
+              -configuration Release -sdk iphoneos -destination 'generic/platform=iOS' \
+              -derivedDataPath ios-app/build/DerivedData \
+              CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY= \
+              build 2>&1 | tee ios-app/build/xcodebuild.log
+          fi
           xcodebuild -project ios-app/IfengAdmin.xcodeproj -scheme IfengAdmin \
             -configuration Release -sdk iphoneos -destination 'generic/platform=iOS' \
             -derivedDataPath ios-app/build/DerivedData \
