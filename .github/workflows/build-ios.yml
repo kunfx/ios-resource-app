@@ -1,7 +1,14 @@
 name: Build iOS IPA
 
-# 在 GitHub Actions 的 macOS Runner 上用系统 Xcode 编译 Release，输出未签名 IPA。
+# 在 GitHub Actions 的 macOS Runner 上编译 Release，输出未签名 IPA。
 # 未签名 IPA 不能直接安装到 iPhone，需要用 ESign / 自签工具或开发者证书重新签名。
+#
+# 关于 Liquid Glass：
+#   底部 Dock 用的是 iOS 26 的官方 API `View.glassEffect(_:in:)`，源码里已经用
+#   `#if compiler(>=6.2)` + `#available(iOS 26.0, *)` 双重保护。
+#   - Runner 上有 Xcode 26 → 走官方玻璃效果；
+#   - 只有 Xcode 16 → 自动回退到材质实现，照样能编译出包，只是玻璃不是系统级。
+#   所以这里会主动挑最新的一版 Xcode，尽量拿到 iOS 26 SDK。
 
 on:
   push:
@@ -31,12 +38,43 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Select newest Xcode
+        run: |
+          set -euo pipefail
+          echo "=== 已安装的 Xcode ==="
+          ls -d /Applications/Xcode*.app 2>/dev/null || true
+
+          BEST=$(python3 - <<'PY'
+          import glob, re
+          candidates = []
+          for path in glob.glob("/Applications/Xcode*.app"):
+              match = re.search(r"Xcode[ _]?([0-9]+(?:\.[0-9]+)*)", path)
+              if match:
+                  version = tuple(int(part) for part in match.group(1).split("."))
+                  candidates.append((version, path))
+          print(max(candidates)[1] if candidates else "")
+          PY
+          )
+
+          if [ -n "${BEST:-}" ]; then
+            echo "使用：$BEST"
+            sudo xcode-select -s "$BEST"
+          else
+            echo "未找到可选 Xcode，沿用默认。"
+          fi
+
       - name: Show toolchain
         run: |
           sw_vers
           xcodebuild -version
           echo "iPhoneOS SDK: $(xcrun --sdk iphoneos --show-sdk-version)"
           xcode-select -p
+
+      - name: Regenerate Xcode project
+        working-directory: ios-app
+        run: |
+          # 保证新增的 .swift 一定被纳入编译，不依赖本地是否记得重跑脚本。
+          python3 tools/make_xcodeproj.py
 
       - name: Validate project
         working-directory: ios-app
@@ -46,7 +84,7 @@ jobs:
             cat /tmp/list.log
             exit 0
           fi
-          echo "::warning::Committed Xcode project could not be read; regenerating with XcodeGen."
+          echo "::warning::Generated Xcode project could not be read; falling back to XcodeGen."
           cat /tmp/list.log || true
           brew install xcodegen
           xcodegen generate
