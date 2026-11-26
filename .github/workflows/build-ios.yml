@@ -86,6 +86,9 @@ jobs:
           test -d "$app"
           test -f "$app/IfengAdmin"
           test -f "$app/AdminBridge.js"
+          test -f "$app/MobileUI.js"
+          test -f "$app/MobileUI.css"
+          test -f "$app/LUCIDE-LICENSE"
           test -f "$app/Assets.car"
           /usr/libexec/PlistBuddy -c 'Print :CFBundleIdentifier' "$app/Info.plist"
           # 明确检查产物没有可安装签名，绝不将构建成功称为签名完成。
