@@ -232,7 +232,7 @@ final class MarkdownInputTextView: UITextView {
         var items: [UIMenuElement] = []
 
         let cutSelector = #selector(UIResponderStandardEditActions.cut(_:))
-        if canPerformAction(cutSelector, with: nil) {
+        if canPerformAction(cutSelector, withSender: nil) {
             items.append(
                 UIAction(title: "剪切", image: UIImage(systemName: "scissors")) { [weak self] _ in
                     self?.cut(nil)
@@ -241,7 +241,7 @@ final class MarkdownInputTextView: UITextView {
         }
 
         let copySelector = #selector(UIResponderStandardEditActions.copy(_:))
-        if canPerformAction(copySelector, with: nil) {
+        if canPerformAction(copySelector, withSender: nil) {
             items.append(
                 UIAction(title: "复制", image: UIImage(systemName: "doc.on.doc")) { [weak self] _ in
                     self?.copy(nil)
@@ -250,7 +250,7 @@ final class MarkdownInputTextView: UITextView {
         }
 
         let pasteSelector = #selector(UIResponderStandardEditActions.paste(_:))
-        if canPerformAction(pasteSelector, with: nil) {
+        if canPerformAction(pasteSelector, withSender: nil) {
             items.append(
                 UIAction(title: "粘贴", image: UIImage(systemName: "doc.on.clipboard")) { [weak self] _ in
                     self?.paste(nil)
@@ -259,7 +259,7 @@ final class MarkdownInputTextView: UITextView {
         }
 
         let selectAllSelector = #selector(UIResponderStandardEditActions.selectAll(_:))
-        if canPerformAction(selectAllSelector, with: nil) {
+        if canPerformAction(selectAllSelector, withSender: nil) {
             // 「全选」没有合适的 SF Symbol，和系统原生菜单一样不配图标。
             items.append(
                 UIAction(title: "全选") { [weak self] _ in
