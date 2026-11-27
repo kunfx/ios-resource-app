@@ -94,6 +94,21 @@ jobs:
         working-directory: ios-app
         run: |
           set -o pipefail
+          # 关于下面三个编译开关（很重要，别删）：
+          #
+          # Release 默认是 `-O -whole-module-optimization`，会把全部源文件
+          # 塞进**同一个 swift-frontend 进程**做优化。GitHub 的 macos-15
+          # runner 只有 7GB 内存，这个组合会把内存打满，然后进程被内核
+          # 直接 SIGKILL —— 表现就是日志里只有一句
+          #   Failed frontend command: <一长串 swiftc 参数>
+          #   Command SwiftCompile failed with a nonzero exit code
+          # 既没有 `error:` 也没有 `Stack dump:`，非常难排查。
+          #
+          # SWIFT_COMPILATION_MODE=incremental  逐文件编译，内存峰值大降
+          # SWIFT_ENABLE_BATCH_MODE=NO          每个文件单独起一个 frontend
+          # SWIFT_ENABLE_DEFAULT_CMO=NO         关掉跨模块优化，进一步省内存
+          #
+          # 代价只是二进制稍微不那么极致优化，对内部客服 App 完全无所谓。
           xcodebuild \
             -project IfengAdmin.xcodeproj \
             -scheme IfengAdmin \
@@ -103,6 +118,9 @@ jobs:
             -derivedDataPath build \
             ARCHS=arm64 \
             ONLY_ACTIVE_ARCH=NO \
+            SWIFT_COMPILATION_MODE=incremental \
+            SWIFT_ENABLE_BATCH_MODE=NO \
+            SWIFT_ENABLE_DEFAULT_CMO=NO \
             CODE_SIGNING_ALLOWED=NO \
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGN_IDENTITY="" \
@@ -162,12 +180,22 @@ jobs:
       - name: Failure summary
         if: failure()
         run: |
-          echo "### 构建失败" >> "$GITHUB_STEP_SUMMARY"
-          echo "" >> "$GITHUB_STEP_SUMMARY"
-          echo "完整日志见本步骤上方输出，以及 Artifact \`build-log\`。" >> "$GITHUB_STEP_SUMMARY"
-          echo "" >> "$GITHUB_STEP_SUMMARY"
-          echo '```' >> "$GITHUB_STEP_SUMMARY"
-          if [ -f /tmp/build.log ]; then
-            grep -E "error:|warning: .*deprecated|BUILD FAILED" /tmp/build.log | head -80 >> "$GITHUB_STEP_SUMMARY" || true
-          fi
-          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          {
+            echo "### 构建失败"
+            echo ""
+            echo "完整日志见 Artifact \`build-log\`。"
+            echo ""
+            echo "#### 错误 / 崩溃标记"
+            echo ""
+            echo '```'
+            # `Failed frontend command` 是 swift-frontend 异常终止的标志：
+            # 后面没有 Stack dump 也没有 error:，通常是被内核 OOM 杀掉。
+            grep -E "error:|Failed frontend command|Stack dump|Please submit a bug report|Killed|signal|BUILD FAILED" /tmp/build.log 2>/dev/null | head -40 || true
+            echo '```'
+            echo ""
+            echo "#### 日志末尾 50 行"
+            echo ""
+            echo '```'
+            tail -50 /tmp/build.log 2>/dev/null || echo "(build.log 不存在)"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
