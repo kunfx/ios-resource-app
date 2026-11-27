@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>深链唤醒测试 · 在线客服</title>
+<style>
+  :root {
+    --bg: #f2f2f7;
+    --card: #ffffff;
+    --text: #1c1c1e;
+    --sub: #6e6e73;
+    --accent: #2a72f0;
+    --danger: #e5484d;
+    --line: rgba(0,0,0,.08);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #000000;
+      --card: #1c1c1e;
+      --text: #f2f2f7;
+      --sub: #98989d;
+      --line: rgba(255,255,255,.12);
+    }
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  body {
+    margin: 0;
+    padding: 20px 16px 48px;
+    background: var(--bg);
+    color: var(--text);
+    font: 15px/1.5 -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue", sans-serif;
+  }
+  h1 { font-size: 20px; margin: 0 0 6px; letter-spacing: -.02em; }
+  .lead { color: var(--sub); font-size: 13px; margin: 0 0 22px; }
+  .card {
+    background: var(--card);
+    border-radius: 14px;
+    padding: 4px 0;
+    margin-bottom: 16px;
+    overflow: hidden;
+  }
+  .card-title {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--sub);
+    text-transform: none;
+    padding: 14px 16px 8px;
+  }
+  a.item, button.item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    width: 100%;
+    padding: 13px 16px;
+    border: 0;
+    border-top: 1px solid var(--line);
+    background: transparent;
+    color: var(--accent);
+    font: inherit;
+    font-size: 15px;
+    text-align: left;
+    text-decoration: none;
+    cursor: pointer;
+  }
+  .card-title + a.item, .card-title + button.item { border-top: 0; }
+  a.item:active, button.item:active { background: rgba(128,128,128,.12); }
+  .item .code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 11px;
+    color: var(--sub);
+    flex: 0 0 auto;
+    max-width: 46%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .item.danger { color: var(--danger); }
+  .field { display: flex; gap: 8px; padding: 12px 16px; border-top: 1px solid var(--line); }
+  .field input {
+    flex: 1;
+    min-width: 0;
+    padding: 9px 12px;
+    border: 1px solid var(--line);
+    border-radius: 9px;
+    background: var(--bg);
+    color: var(--text);
+    font: inherit;
+    font-size: 15px;
+  }
+  .field input:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
+  .field button {
+    flex: 0 0 auto;
+    padding: 9px 16px;
+    border: 0;
+    border-radius: 9px;
+    background: var(--accent);
+    color: #fff;
+    font: inherit;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+  }
+  h2 { font-size: 14px; margin: 26px 0 8px; }
+  ol, ul { margin: 0; padding-left: 20px; color: var(--sub); font-size: 13px; }
+  li { margin-bottom: 7px; }
+  code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 12px;
+    background: rgba(128,128,128,.14);
+    padding: 1px 5px;
+    border-radius: 4px;
+    color: var(--text);
+  }
+  .hint {
+    background: rgba(42,114,240,.09);
+    border: 1px solid rgba(42,114,240,.22);
+    border-radius: 12px;
+    padding: 12px 14px;
+    font-size: 13px;
+    color: var(--text);
+    margin-bottom: 16px;
+  }
+  .hint b { color: var(--accent); }
+</style>
+</head>
+<body>
+
+<h1>深链唤醒测试</h1>
+<p class="lead">点下面的链接，看能不能跳到「在线客服」APP。全部用同一个 URL Scheme：<code>ifengadmin</code></p>
+
+<div class="hint">
+  <b>前提：</b>APP 至少要手动打开过一次，系统才会注册它声明的 Scheme。
+  刚装完还没点开过，下面所有链接都会没反应——这不是 bug。
+</div>
+
+<div class="card">
+  <div class="card-title">正常链接（应该能唤醒）</div>
+  <a class="item" href="ifengadmin://conversation/1">打开会话 #1<span class="code">/conversation/1</span></a>
+  <a class="item" href="ifengadmin://conversation/123">打开会话 #123<span class="code">/conversation/123</span></a>
+  <a class="item" href="ifengadmin://conversation/123?account_id=2">带账户校验<span class="code">?account_id=2</span></a>
+  <a class="item" href="ifengadmin://">只唤醒，不带参数<span class="code">ifengadmin://</span></a>
+</div>
+
+<div class="card">
+  <div class="card-title">自定义会话 ID</div>
+  <div class="field">
+    <input id="cid" type="number" inputmode="numeric" min="1" placeholder="输入一个真实会话 ID">
+    <button onclick="go()">打开</button>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-title">非法链接（应该被忽略，不跳转）</div>
+  <a class="item danger" href="ifengadmin://conversation/abc">ID 不是数字<span class="code">/conversation/abc</span></a>
+  <a class="item danger" href="ifengadmin://conversation/1?foo=bar">多余参数<span class="code">?foo=bar</span></a>
+  <a class="item danger" href="ifengadmin://other/1">路径不对<span class="code">/other/1</span></a>
+</div>
+
+<h2>怎么判断成功了</h2>
+<ul>
+  <li><b>跳到了 APP</b> → Scheme 注册成功，深链通路没问题。</li>
+  <li><b>跳到 APP 但停在登录页</b> → 也成功了。未登录时 APP 会先让你登录，登录完成后再自动跳到目标会话。</li>
+  <li><b>跳到 APP，提示「会话不存在或没有访问权限」</b> → 也成功了，只是这个 ID 在服务端不存在或不属于你。</li>
+  <li><b>跳到 APP，顶部提示「该会话不属于当前账户」</b> → 也成功了，说明 <code>account_id</code> 校验生效。</li>
+  <li><b>点了没反应 / 弹「Safari 打不开网页」</b> → 见下面的排查。</li>
+</ul>
+
+<h2>点了没反应，按顺序排查</h2>
+<ol>
+  <li>先手动点开一次 APP 图标，然后回到这个页面再点链接。</li>
+  <li>确认装的是这次编译出来的包，不是旧版本。APP 里能正常登录就说明是新的。</li>
+  <li>如果你用自签工具重签过，检查有没有改过 Bundle ID。Scheme <code>ifengadmin</code> 写在 Info.plist 里，重签一般会保留，但如果工具「优化」过 plist 可能被删。</li>
+  <li>手机上是不是同时装了两个声明 <code>ifengadmin</code> 的包？系统只会给其中一个，删掉多余的那个。</li>
+  <li>在 Safari 地址栏直接敲 <code>ifengadmin://conversation/1</code> 回车，如果弹出「在"在线客服"中打开？」，点「打开」——能弹这个框就说明 Scheme 是好的，只是页面内链接被拦了。</li>
+  <li>以上都不行，用「快捷指令」App 建一个「打开 URL」的快捷指令，填 <code>ifengadmin://conversation/1</code> 运行。这是最不受浏览器策略影响的方式。</li>
+</ol>
+
+<h2>注意：Safari 地址栏 ≠ 页面链接</h2>
+<p class="lead" style="margin-top:8px">
+  iOS Safari 地址栏直接输入自定义 Scheme，经常会被当成搜索词处理，行为不稳定。
+  <b>页面里点链接</b>才是可靠的测试方式。另外，从别的 App（微信、备忘录）里点开这个链接通常也会被拦，
+  最稳的是 Safari 里的真实 <code>&lt;a href&gt;</code> 链接，或者「快捷指令」。
+</p>
+
+<script>
+  function go() {
+    var v = document.getElementById('cid').value.trim();
+    if (!v || !/^\d+$/.test(v) || Number(v) <= 0) {
+      alert('请输入一个正整数会话 ID');
+      return;
+    }
+    window.location.href = 'ifengadmin://conversation/' + v;
+  }
+  document.getElementById('cid').addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') { e.preventDefault(); go(); }
+  });
+</script>
+</body>
+</html>
