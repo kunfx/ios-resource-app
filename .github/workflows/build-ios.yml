@@ -96,19 +96,21 @@ jobs:
           set -o pipefail
           # 关于下面三个编译开关（很重要，别删）：
           #
-          # Release 默认是 `-O -whole-module-optimization`，会把全部源文件
-          # 塞进**同一个 swift-frontend 进程**做优化。GitHub 的 macos-15
-          # runner 只有 7GB 内存，这个组合会把内存打满，然后进程被内核
-          # 直接 SIGKILL —— 表现就是日志里只有一句
+          # 起因：Release 默认是 `-O -whole-module-optimization`，把 28 个源文件
+          # 塞进**同一个 swift-frontend 进程**。MarkdownTextView.swift 里有两处
+          # 高危写法（元组 key path `id: \.offset`、互相递归的 `some View` 函数），
+          # 让类型检查器崩掉（现象是几毫秒内静默死亡，最可能是栈溢出）。日志里只有
           #   Failed frontend command: <一长串 swiftc 参数>
           #   Command SwiftCompile failed with a nonzero exit code
-          # 既没有 `error:` 也没有 `Stack dump:`，非常难排查。
+          # 既没有 `error:` 也没有 `Stack dump:` —— 整模块模式下根本不知道该修哪个文件。
           #
-          # SWIFT_COMPILATION_MODE=incremental  逐文件编译，内存峰值大降
-          # SWIFT_ENABLE_BATCH_MODE=NO          每个文件单独起一个 frontend
-          # SWIFT_ENABLE_DEFAULT_CMO=NO         关掉跨模块优化，进一步省内存
+          # 换成逐文件编译后，日志立刻变成
+          #   The following build commands failed:
+          #       SwiftCompile normal arm64 Compiling\ MarkdownTextView.swift
+          # 一眼定位到问题文件。
           #
-          # 代价只是二进制稍微不那么极致优化，对内部客服 App 完全无所谓。
+          # 所以这三个开关不只是省内存，更重要的是**把编译器崩溃变成可定位的信息**。
+          # 代价只是二进制优化程度略低，对内部客服 App 完全无所谓。
           xcodebuild \
             -project IfengAdmin.xcodeproj \
             -scheme IfengAdmin \
