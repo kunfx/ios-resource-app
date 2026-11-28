@@ -430,8 +430,11 @@ final class SelectableTextView: UITextView, UIGestureRecognizerDelegate {
         // 内边距全部交给外层 SwiftUI 的 `.padding`，这里清零，
         // 否则气泡会多出 8pt 上边距、选区位置也会偏。
         textContainerInset = .zero
-        textContainer.lineFragmentPadding = 0
-        textContainer.widthTracksTextView = true
+        // 必须写 `self.`：初始化器的形参也叫 `textContainer`（类型是
+        // `NSTextContainer?`），不写 self 拿到的是形参，会报
+        // 「value of optional type 'NSTextContainer?' must be unwrapped」。
+        self.textContainer.lineFragmentPadding = 0
+        self.textContainer.widthTracksTextView = true
         // 链接由属性串自己标（见 `MessageAttributed.linkKey`），
         // 不让系统再自动识别一遍电话/日期。
         dataDetectorTypes = []
